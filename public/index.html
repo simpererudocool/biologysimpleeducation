@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kernel Exploit — desktop</title>
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/index.css" />
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="/register-sw.js" defer></script>
+    <script src="/index.js" defer></script>
+  </head>
+  <body>
+    <div class="gnome-desktop" id="top">
+      <header class="top-panel">
+        <button class="activities" id="activities-button" type="button"><span class="activities-dot"></span> Activities</button>
+        <div class="panel-center"><span class="panel-workspace">Workspace 1</span><span class="panel-separator">·</span><span id="clock">--:--</span></div>
+        <div class="panel-status"><span class="status-icon">⌁</span><span class="status-icon">◒</span><button id="privacy-button" type="button">☰</button></div>
+      </header>
+
+      <main class="workspace">
+        <div class="desktop-note"><span class="note-pin">•</span><div><strong>Good to see you.</strong><p>This is your little corner of the web. Open something, make it useful.</p></div></div>
+
+        <section class="welcome-window" aria-labelledby="welcome-title">
+          <div class="window-header"><div class="window-dots"><button class="window-dot close" id="welcome-close" aria-label="Hide welcome window" type="button"></button><span class="window-dot"></span><span class="window-dot"></span></div><span class="window-title">kernel-exploit — Home</span><button class="header-menu" type="button">⋮</button></div>
+          <div class="welcome-content">
+            <div class="welcome-copy"><span class="small-label">Personal desktop · ready</span><h1 id="welcome-title">A calm place<br /><em>to go somewhere.</em></h1><p>Browse a site, start a game, or leave this open while you figure out what comes next.</p><button class="warm-button" id="open-browser" type="button">Open the browser <span>→</span></button></div>
+            <div class="sun-shape" aria-hidden="true"><span>k</span></div>
+          </div>
+          <div class="window-footer"><span>Kernel Exploit 0.1</span><span>Connected through your configured route</span></div>
+        </section>
+
+        <section class="app-area" id="games-section">
+          <div class="section-heading"><div><span class="small-label">Your apps</span><h2>Things you can open</h2></div><button class="plain-button" data-app="about" type="button">about this desktop <span>↗</span></button></div>
+          <div class="app-layout">
+            <button class="app-card browser-card" data-app="browser" type="button"><span class="app-badge browser-badge">◎</span><strong>Web browser</strong><small>Open a route and see where it goes.</small><span class="card-arrow">→</span></button>
+            <button class="app-card game-card" data-url="https://www.roblox.com" type="button"><span class="app-badge game-badge">R</span><strong>Roblox</strong><small>Ready when you are.</small><span class="card-arrow">→</span></button>
+            <div class="app-side-note"><span class="small-label">A small reminder</span><p>You can add your own game links in <code>public/index.html</code>. No account, no ceremony.</p></div>
+          </div>
+          <div class="empty-apps"><button class="empty-card" data-app="coming-soon" type="button"><span>+</span><strong>Add something</strong><small>Leave a spot for your next idea.</small></button><button class="empty-card" data-app="coming-soon" type="button"><span>+</span><strong>Another spot</strong><small>It can be a game, tool, or link.</small></button></div>
+        </section>
+
+        <section class="human-footer" id="about-section"><div class="avatar">K</div><p><strong>Built for one person at a time.</strong><br />The proxy route can change where requests leave from, but it is not an anonymity guarantee.</p><button id="footer-privacy" type="button">Read the privacy note</button></section>
+      </main>
+
+      <nav class="dock" aria-label="Applications"><button class="dock-app active" data-app="browser" type="button"><span class="dock-icon">◎</span><small>Browser</small></button><button class="dock-app" data-app="games" type="button"><span class="dock-icon">R</span><small>Roblox</small></button><span class="dock-line"></span><button class="dock-app" id="show-desktop" type="button"><span class="dock-icon">▦</span><small>Overview</small></button></nav>
+
+      <section class="browser-window" id="browser-window" hidden aria-label="Kernel Exploit browser">
+        <div class="window-header"><div class="window-dots"><button class="window-dot close" id="browser-close" aria-label="Close browser" type="button"></button><span class="window-dot"></span><span class="window-dot"></span></div><span class="window-title">Web browser</span><button class="header-menu" type="button">⋮</button></div>
+        <div class="browser-toolbar"><button class="toolbar-button" id="browser-back" aria-label="Back" type="button">‹</button><button class="toolbar-button" id="browser-forward" aria-label="Forward" type="button">›</button><button class="toolbar-button" id="browser-reload" aria-label="Reload" type="button">↻</button><form id="sj-form" autocomplete="off"><span class="address-lock">⌁</span><input id="sj-address" type="text" placeholder="Type a web address or search" /><button type="submit">Go</button></form></div><p id="sj-error" class="error" role="alert"></p><div class="browser-stage" id="browser-stage"></div>
+      </section>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+  </body>
+</html>
