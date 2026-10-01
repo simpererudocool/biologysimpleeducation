@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Kernel Exploit — desktop</title>
+    <meta name="theme-color" content="#202124" />
+    <title>Protobash</title>
     <link rel="icon" href="/favicon.svg" />
     <link rel="stylesheet" href="/index.css" />
     <script src="/scram/scramjet.all.js"></script>
@@ -12,48 +13,67 @@
     <script src="/index.js" defer></script>
   </head>
   <body>
-    <div class="gnome-desktop" id="top">
+    <div class="app-shell" id="top">
       <header class="top-panel">
-        <button class="activities" id="activities-button" type="button">Activities</button>
-        <div class="panel-center"><span id="clock">--:--</span></div>
-        <div class="panel-status"><span aria-label="Network connected">⌁</span><span aria-label="Audio">◖</span><span aria-label="Battery">▮</span><button id="privacy-button" aria-label="Privacy notes" type="button">⌄</button></div>
+        <a class="brand" id="show-home" href="/" aria-label="Protobash desktop home">
+          <span>protobash</span>
+        </a>
+        <div class="panel-clock" id="clock">--:--</div>
+        <div class="panel-status">
+          <button class="privacy-link" id="privacy-button" type="button">Privacy</button>
+        </div>
       </header>
 
-      <main class="workspace">
+      <main class="desktop" aria-label="Desktop">
         <section class="desktop-icons" aria-label="Desktop shortcuts">
-          <button class="desktop-icon" data-app="browser" type="button"><span class="desktop-icon-art globe-art">◎</span><span>Web Browser</span></button>
-          <button class="desktop-icon" data-app="games" type="button"><span class="desktop-icon-art folder-art">▰</span><span>Games</span></button>
-          <button class="desktop-icon" data-app="about" type="button"><span class="desktop-icon-art text-art">A</span><span>Read me</span></button>
+          <button class="desktop-icon" data-app="browser" type="button">
+            <span class="desktop-icon-art browser-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/app-window.svg?color=%23d6e0d6" alt="" /></span>
+            <span>Browser</span>
+          </button>
         </section>
 
-        <div class="welcome-window" aria-labelledby="welcome-title">
-          <div class="window-header"><div class="window-dots"><button class="window-dot close" id="welcome-close" aria-label="Close welcome window" type="button"></button><span class="window-dot"></span><span class="window-dot"></span></div><span class="window-title">kernel-exploit</span><button class="header-menu" type="button">☰</button></div>
-          <div class="welcome-content">
-            <div class="welcome-copy"><span class="small-label">Welcome</span><h1 id="welcome-title">Your desktop.<br /><em>Your routes.</em></h1><p>A small, useful place to open the web and keep the things you come back to.</p><button class="warm-button" id="open-browser" type="button">Open Web Browser <span>→</span></button></div>
-            <div class="welcome-orbit" aria-hidden="true"><span class="orbit-letter">K</span><span class="orbit-line one"></span><span class="orbit-line two"></span></div>
+        <section class="browser-window" id="browser-window" aria-label="Protobash browser">
+          <div class="window-titlebar">
+            <div class="window-controls">
+              <button class="window-control close-control" id="browser-close" aria-label="Close window" title="Close" type="button"></button>
+              <button class="window-control minimize-control" id="browser-minimize" aria-label="Minimize window" title="Minimize" type="button"></button>
+              <button class="window-control maximize-control" id="browser-maximize" aria-label="Maximize window" title="Maximize" type="button"></button>
+            </div>
+            <span class="window-title">Browser</span>
+            <span class="window-app-label" aria-hidden="true"></span>
           </div>
-          <div class="window-footer"><span>Kernel Exploit</span><span>Ready</span></div>
-        </div>
-
-        <section class="apps-window" id="games-section" aria-labelledby="apps-title">
-          <div class="window-header"><div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div><span class="window-title" id="apps-title">Applications</span><button class="header-menu" type="button">☰</button></div>
-          <div class="apps-content">
-            <button class="app-card browser-card" data-app="browser" type="button"><span class="app-icon globe-art">◎</span><strong>Web Browser</strong><small>Open a route</small></button>
-            <button class="app-card game-card" data-url="https://www.roblox.com" type="button"><span class="app-icon game-art">R</span><strong>Roblox</strong><small>Ready to play</small></button>
-            <button class="app-card empty-card" data-app="coming-soon" type="button"><span class="app-icon plus-art">+</span><strong>Add an app</strong><small>Your next link</small></button>
-            <button class="app-card empty-card" data-app="coming-soon" type="button"><span class="app-icon plus-art">+</span><strong>Another app</strong><small>Leave room for it</small></button>
+          <div class="browser-toolbar">
+            <div class="browser-controls" aria-label="Browser navigation">
+              <button class="toolbar-button" id="browser-back" aria-label="Back" title="Back" type="button"><img class="icon" src="https://api.iconify.design/lucide/arrow-left.svg?color=%23929b93" alt="" /></button>
+              <button class="toolbar-button" id="browser-forward" aria-label="Forward" title="Forward" type="button"><img class="icon" src="https://api.iconify.design/lucide/arrow-right.svg?color=%23929b93" alt="" /></button>
+              <button class="toolbar-button" id="browser-reload" aria-label="Reload" title="Reload" type="button"><img class="icon" src="https://api.iconify.design/lucide/rotate-cw.svg?color=%23929b93" alt="" /></button>
+            </div>
+            <form id="sj-form" autocomplete="off">
+              <input id="sj-address" type="text" aria-label="Web address or search" placeholder="Search or enter address" />
+              <button type="submit">Go</button>
+            </form>
+            <button class="home-button" id="browser-home" aria-label="Home" title="Home" type="button"><img class="icon" src="https://api.iconify.design/lucide/house.svg?color=%23929b93" alt="" /></button>
+          </div>
+          <p id="sj-error" class="error" role="alert"></p>
+          <div class="browser-stage" id="browser-stage">
+            <div class="home-view" id="home-view">
+              <section class="welcome" aria-labelledby="welcome-title">
+                <h1 id="welcome-title">New tab</h1>
+                <p>Enter an address or search term.</p>
+              </section>
+              <aside class="privacy-note">
+                <p>Sites may see the proxy server’s IP address. This does not make you anonymous. <button id="footer-privacy" type="button">Details</button></p>
+              </aside>
+            </div>
           </div>
         </section>
 
-        <section class="human-footer" id="about-section"><div class="avatar">K</div><p><strong>Made for one person at a time.</strong> Check the privacy note before sharing the desktop.</p><button id="footer-privacy" type="button">Privacy notes</button></section>
+        <nav class="dock" aria-label="Applications">
+          <button class="dock-app active" data-app="browser" type="button"><span class="dock-icon browser-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/app-window.svg?color=%23d6e0d6" alt="" /></span><span>Browser</span></button>
+          <span class="dock-divider" aria-hidden="true"></span>
+          <button class="dock-app" id="show-desktop" type="button"><span class="dock-icon desktop-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/monitor.svg?color=%23d6e0d6" alt="" /></span><span>Show desktop</span></button>
+        </nav>
       </main>
-
-      <nav class="dock" aria-label="Applications"><button class="dock-app active" data-app="browser" type="button"><span class="dock-icon globe-art">◎</span><small>Browser</small></button><button class="dock-app" data-url="https://www.roblox.com" type="button"><span class="dock-icon game-art">R</span><small>Roblox</small></button><span class="dock-line"></span><button class="dock-app" id="show-desktop" type="button"><span class="dock-icon apps-art">•••</span><small>Show Apps</small></button></nav>
-
-      <section class="browser-window" id="browser-window" hidden aria-label="Kernel Exploit browser">
-        <div class="window-header"><div class="window-dots"><button class="window-dot close" id="browser-close" aria-label="Close browser" type="button"></button><span class="window-dot"></span><span class="window-dot"></span></div><span class="window-title">Web Browser</span><button class="header-menu" type="button">☰</button></div>
-        <div class="browser-toolbar"><button class="toolbar-button" id="browser-back" aria-label="Back" type="button">‹</button><button class="toolbar-button" id="browser-forward" aria-label="Forward" type="button">›</button><button class="toolbar-button" id="browser-reload" aria-label="Reload" type="button">↻</button><form id="sj-form" autocomplete="off"><span class="address-lock">⌁</span><input id="sj-address" type="text" placeholder="Type a web address or search" /><button type="submit">Go</button></form></div><p id="sj-error" class="error" role="alert"></p><div class="browser-stage" id="browser-stage"></div>
-      </section>
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
     </div>
   </body>

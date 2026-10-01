@@ -5,6 +5,9 @@ const address = document.getElementById("sj-address");
 const error = document.getElementById("sj-error");
 const browserWindow = document.getElementById("browser-window");
 const browserStage = document.getElementById("browser-stage");
+const clock = document.getElementById("clock");
+const dockBrowser = document.querySelector('.dock-app[data-app="browser"]');
+const homeView = document.getElementById("home-view");
 const toast = document.getElementById("toast");
 const { ScramjetController } = $scramjetLoadController();
 
@@ -37,16 +40,34 @@ function resolveUrl(value) {
   return `https://html.duckduckgo.com/html/?q=${encodeURIComponent(input)}`;
 }
 
+function updateDock() {
+  dockBrowser.classList.toggle("active", !browserWindow.classList.contains("minimized") && !browserWindow.classList.contains("closed"));
+}
+
 function openBrowser() {
-  browserWindow.hidden = false;
+  browserWindow.classList.remove("minimized", "closed");
+  updateDock();
   address.focus();
 }
 
 function closeBrowser() {
-  browserWindow.hidden = true;
-  browserStage.replaceChildren();
+  browserStage.replaceChildren(homeView);
   currentFrame = undefined;
   error.textContent = "";
+}
+
+function hideBrowser() {
+  browserWindow.classList.add("closed");
+  updateDock();
+}
+
+function minimizeBrowser() {
+  browserWindow.classList.add("minimized");
+  updateDock();
+}
+
+function toggleMaximize() {
+  browserWindow.classList.toggle("maximized");
 }
 
 async function navigate(value) {
@@ -58,7 +79,7 @@ async function navigate(value) {
   openBrowser();
   currentFrame = scramjet.createFrame();
   currentFrame.frame.id = "sj-frame";
-  currentFrame.frame.title = "Kernel Exploit browser";
+  currentFrame.frame.title = "Protobash browser";
   currentFrame.frame.allow = "fullscreen; autoplay; clipboard-read; clipboard-write";
   browserStage.replaceChildren(currentFrame.frame);
   currentFrame.go(resolveUrl(value));
@@ -73,35 +94,20 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
-document.querySelectorAll("[data-app=browser], #open-browser").forEach((button) => {
-  button.addEventListener("click", () => openBrowser());
+document.getElementById("show-home").addEventListener("click", (event) => {
+  event.preventDefault();
+  closeBrowser();
 });
-document.getElementById("activities-button").addEventListener("click", () => {
-  document.querySelector(".desktop-icons").scrollIntoView({ behavior: "smooth", block: "center" });
+document.getElementById("browser-home").addEventListener("click", closeBrowser);
+document.getElementById("browser-close").addEventListener("click", () => {
+  closeBrowser();
+  hideBrowser();
 });
-document.querySelectorAll("[data-app=games]").forEach((button) => {
-  button.addEventListener("click", () => document.getElementById("games-section").scrollIntoView({ behavior: "smooth" }));
-});
-document.querySelectorAll("[data-app=about]").forEach((button) => {
-  button.addEventListener("click", () => document.getElementById("about-section").scrollIntoView({ behavior: "smooth" }));
-});
-document.querySelectorAll("[data-url]").forEach((card) => {
-  card.addEventListener("click", async () => {
-    address.value = card.dataset.url;
-    try {
-      await navigate(card.dataset.url);
-    } catch (err) {
-      error.textContent = err instanceof Error ? err.message : String(err);
-    }
-  });
-});
-document.querySelectorAll(".empty-card[data-app=coming-soon]").forEach((card) => {
-  card.addEventListener("click", () => showToast("This library slot is waiting for your game link."));
-});
-document.getElementById("browser-close").addEventListener("click", closeBrowser);
-document.getElementById("show-desktop").addEventListener("click", closeBrowser);
-document.getElementById("welcome-close").addEventListener("click", () => {
-  document.querySelector(".welcome-window").hidden = true;
+document.getElementById("browser-minimize").addEventListener("click", minimizeBrowser);
+document.getElementById("browser-maximize").addEventListener("click", toggleMaximize);
+document.getElementById("show-desktop").addEventListener("click", minimizeBrowser);
+document.querySelectorAll('[data-app="browser"]').forEach((button) => {
+  button.addEventListener("click", openBrowser);
 });
 document.getElementById("browser-back").addEventListener("click", () => currentFrame?.back());
 document.getElementById("browser-forward").addEventListener("click", () => currentFrame?.forward());
@@ -110,7 +116,11 @@ const privacyMessage = () => showToast(location.hostname === "localhost" || loca
 document.getElementById("privacy-button").addEventListener("click", privacyMessage);
 document.getElementById("footer-privacy").addEventListener("click", privacyMessage);
 
-document.getElementById("clock").textContent = new Intl.DateTimeFormat([], { hour: "2-digit", minute: "2-digit" }).format(new Date());
-setInterval(() => {
-  document.getElementById("clock").textContent = new Intl.DateTimeFormat([], { hour: "2-digit", minute: "2-digit" }).format(new Date());
-}, 30000);
+function updateClock() {
+  clock.textContent = new Intl.DateTimeFormat([], { weekday: "short", hour: "2-digit", minute: "2-digit" }).format(new Date());
+}
+
+updateClock();
+setInterval(updateClock, 30000);
+
+document.querySelector(".window-titlebar").addEventListener("dblclick", toggleMaximize);
