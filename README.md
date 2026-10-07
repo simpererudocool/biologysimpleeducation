@@ -1,51 +1,38 @@
-# Kernel Exploit
+# Protobash
 
-A GNOME-inspired personal web desktop with a routed Scramjet browser, BareMux, libcurl transport, Wisp, and a customizable game vault.
+A lightweight desktop-style proxy browser built on Scramjet 2, the Scramjet controller and utilities, libcurl transport, and Wisp.
 
 ## Setup
 
-Requires Node.js 20+ and pnpm.
+Requires Node.js 20.19+ and pnpm 10+.
 
 ```bash
 pnpm install
 pnpm start
 ```
 
-Open <http://localhost:8080>. Use the Kernel Exploit desktop, open **browser**, or launch Roblox from **game vault**. Bare search terms use DuckDuckGo HTML because Google commonly rate-limits shared proxy IPs with 429/reCAPTCHA. Add your own game links to the cards in `public/index.html` when ready.
+Open <http://localhost:8080> and launch **Browser** from the desktop or dock. Bare search terms use DuckDuckGo HTML because Google commonly rate-limits shared proxy IPs with 429/reCAPTCHA.
 
 ## How it is wired
 
-- `src/index.js` serves the public site and mounts the package assets at `/scram/`.
-- `/baremux/` serves the BareMux worker.
+- `src/index.js` serves the public site and mounts core assets at `/scram/`, the controller at `/controller/`, utilities at `/utils/`, and libcurl at `/libcurl/`.
 - `/libcurl/` serves the libcurl transport.
 - `/wisp/` is the WebSocket transport endpoint.
-- `public/sw.js` loads `scramjet.all.js`, routes proxy requests, and passes other requests through.
-- `public/index.js` initializes `ScramjetController`, registers the service worker, and configures BareMux.
+- `public/sw.js` uses the Scramjet 2 service-worker router for proxied requests and leaves other requests untouched.
+- `public/index.js` registers the service worker, loads the Scramjet 2 browser bundles, and initializes the controller with libcurl transport.
 
 The service worker must be used from HTTPS in production. Localhost is allowed by browsers for development.
 
-## Troubleshooting `Invalid URL scheme: None`
+## Scramjet 2 runtime assets
 
-The npm `2.0.0-alpha` package is currently marked by its own registry metadata as broken, and its bundled Epoxy client can produce this error. This starter uses the maintained v1.1.0 release so the documented controller and service-worker API works reliably.
+Scramjet 2 is currently published as a prerelease, so this project pins compatible package versions explicitly. The server serves the core, controller, utilities, and libcurl browser assets directly from their installed packages:
 
-After changing versions, reinstall and clear the old browser state. The proxy frame is styled to fill the entire viewport; if an older page remains letterboxed, reload after clearing the service worker:
+- `/scram/scramjet.js` and `/scram/scramjet.wasm`
+- `/controller/controller.api.js`, `/controller/controller.sw.js`, and `/controller/controller.inject.js`
+- `/utils/scramjet-utils.js`
+- `/libcurl/index.mjs`
 
-```bash
-pnpm install
-pnpm start
-```
-
-Then unregister the old service worker in DevTools → Application → Service Workers, clear site data, and reload the exact URL printed by the server, typically `http://localhost:8080`. The registration is equivalent to `navigator.serviceWorker.register('/sw.js', { scope: '/' })`.
-
-## Scramjet runtime assets
-
-The server imports `scramjetPath` from `@mercuryworkshop/scramjet/path` and serves its generated assets under `/scram/`, including:
-
-- `/scram/scramjet.all.js`
-- `/scram/scramjet.wasm.wasm`
-- `/scram/scramjet.sync.js`
-
-No manual copying of the Scramjet bundle is needed.
+The service worker is registered at `/sw.js?v=2` to install the Scramjet v2 router and claim the page before the controller starts. If a browser still has a stale worker after upgrading, unregister it in DevTools → Application → Service Workers, clear site data, and reload.
 
 ## Privacy and security
 

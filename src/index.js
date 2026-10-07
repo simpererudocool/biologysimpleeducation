@@ -1,14 +1,22 @@
 import { createServer } from "node:http";
+import { access, readdir } from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { hostname } from "node:os";
+import { createRequire } from "node:module";
+import path from "node:path";
 import { server as wisp, logging } from "@mercuryworkshop/wisp-js/server";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
-import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
-import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 
+const require = createRequire(import.meta.url);
+const packagePath = (specifier) => path.dirname(require.resolve(specifier));
+const controllerPath = packagePath("@mercuryworkshop/scramjet-controller");
+const utilsPath = packagePath("@mercuryworkshop/scramjet-utils");
+const libcurlPath = packagePath("@mercuryworkshop/libcurl-transport");
 const publicPath = fileURLToPath(new URL("../public/", import.meta.url));
+const gamesPath = fileURLToPath(new URL("../games/", import.meta.url));
 
 logging.set_level(logging.NONE);
 Object.assign(wisp.options, {
@@ -31,6 +39,42 @@ const app = Fastify({
 });
 
 await app.register(fastifyStatic, { root: publicPath });
+const gamesAvailable = await access(gamesPath).then(
+  () => true,
+  (error) => {
+    if (error.code === "ENOENT") return false;
+    throw error;
+  },
+);
+if (gamesAvailable) {
+  await app.register(fastifyStatic, {
+    root: gamesPath,
+    prefix: "/games/",
+    decorateReply: false,
+  });
+}
+
+const gameLibrary = gamesAvailable
+  ? readdir(gamesPath, { withFileTypes: true }).then(async (entries) => {
+    const games = await Promise.all(entries
+      .filter((entry) => entry.isDirectory() && /^[a-z0-9_-]+$/i.test(entry.name))
+      .map(async (entry) => {
+        try {
+          await access(path.join(gamesPath, entry.name, "index.html"), fsConstants.R_OK);
+          return {
+            id: entry.name,
+            name: entry.name.split(/[-_]+/).map((word) => word ? word[0].toUpperCase() + word.slice(1) : "").join(" "),
+          };
+        } catch {
+          return null;
+        }
+      }));
+    return games.filter(Boolean).sort((first, second) => first.name.localeCompare(second.name));
+  })
+  : Promise.resolve([]);
+app.get("/api/games", async (_request, reply) => {
+  reply.header("Cache-Control", "no-store").send(await gameLibrary);
+});
 await app.register(fastifyStatic, {
   root: scramjetPath,
   prefix: "/scram/",
@@ -42,8 +86,13 @@ await app.register(fastifyStatic, {
   decorateReply: false,
 });
 await app.register(fastifyStatic, {
-  root: baremuxPath,
-  prefix: "/baremux/",
+  root: controllerPath,
+  prefix: "/controller/",
+  decorateReply: false,
+});
+await app.register(fastifyStatic, {
+  root: utilsPath,
+  prefix: "/utils/",
   decorateReply: false,
 });
 

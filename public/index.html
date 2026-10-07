@@ -6,9 +6,10 @@
     <meta name="theme-color" content="#202124" />
     <title>Protobash</title>
     <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/index.css" />
-    <script src="/scram/scramjet.all.js"></script>
-    <script src="/baremux/index.js"></script>
     <script src="/register-sw.js" defer></script>
     <script src="/index.js" defer></script>
   </head>
@@ -29,6 +30,10 @@
           <button class="desktop-icon" data-app="browser" type="button">
             <span class="desktop-icon-art browser-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/app-window.svg?color=%23d6e0d6" alt="" /></span>
             <span>Browser</span>
+          </button>
+          <button class="desktop-icon" data-app="library" type="button">
+            <span class="desktop-icon-art library-art" aria-hidden="true"><span>▦</span></span>
+            <span>Games</span>
           </button>
         </section>
 
@@ -56,10 +61,10 @@
           </div>
           <p id="sj-error" class="error" role="alert"></p>
           <div class="browser-stage" id="browser-stage">
-            <div class="home-view" id="home-view">
+            <div class="home-view browser-home-view" id="home-view">
               <section class="welcome" aria-labelledby="welcome-title">
                 <h1 id="welcome-title">New tab</h1>
-                <p>Enter an address or search term.</p>
+                <p>Search the web or enter an address.</p>
               </section>
               <aside class="privacy-note">
                 <p>Sites may see the proxy server’s IP address. This does not make you anonymous. <button id="footer-privacy" type="button">Details</button></p>
@@ -68,8 +73,57 @@
           </div>
         </section>
 
+        <section class="browser-window game-window closed" id="games-window" aria-label="Protobash game library">
+          <div class="window-titlebar games-titlebar">
+            <div class="window-controls">
+              <button class="window-control close-control" id="games-close" aria-label="Close games" title="Close" type="button"></button>
+              <button class="window-control minimize-control" id="games-minimize" aria-label="Minimize games" title="Minimize" type="button"></button>
+              <button class="window-control maximize-control" id="games-maximize" aria-label="Maximize games" title="Maximize" type="button"></button>
+            </div>
+            <span class="window-title" id="games-window-title">Games</span>
+            <span class="window-app-label" aria-hidden="true">ARCADE</span>
+          </div>
+          <div class="game-toolbar">
+            <button class="game-toolbar-button" id="game-library-button" type="button" hidden>← <span>Library</span></button>
+            <span class="game-toolbar-hint" id="game-toolbar-hint">Choose a game to play</span>
+            <button class="game-toolbar-button" id="game-reload" type="button" aria-label="Reload game" title="Reload game" hidden>↻</button>
+            <button class="game-toolbar-button" id="game-fullscreen" type="button" aria-label="Fullscreen" title="Fullscreen" hidden>⛶</button>
+          </div>
+          <div class="browser-stage game-stage" id="game-stage">
+            <div class="home-view game-home-view" id="game-home-view">
+              <section class="game-library" aria-labelledby="games-heading">
+                <div class="library-heading">
+                  <p class="eyebrow">YOUR ARCADE</p>
+                  <h1 id="games-heading">Game Library</h1>
+                  <p class="library-subtitle">Pick a game and jump right in.</p>
+                </div>
+                <label class="game-search-wrap">
+                  <span aria-hidden="true">⌕</span>
+                  <input id="game-search" type="search" placeholder="Find a game" autocomplete="off" aria-label="Find a game" />
+                  <span class="game-count" id="game-count" aria-live="polite">Loading…</span>
+                </label>
+                <div class="game-categories" id="game-categories" role="group" aria-label="Filter games">
+                  <button class="category-chip active" type="button" data-category="all" aria-pressed="true">All games</button>
+                  <button class="category-chip" type="button" data-category="sports" aria-pressed="false">Sports</button>
+                  <button class="category-chip" type="button" data-category="action" aria-pressed="false">Action</button>
+                  <button class="category-chip" type="button" data-category="racing" aria-pressed="false">Racing</button>
+                  <button class="category-chip" type="button" data-category="puzzle" aria-pressed="false">Puzzle</button>
+                  <button class="category-chip" type="button" data-category="arcade" aria-pressed="false">Arcade</button>
+                </div>
+                <div class="game-grid" id="game-grid" aria-label="Available games"></div>
+                <button class="load-more-games" id="load-more-games" type="button" hidden>Show more games</button>
+                <p class="game-empty" id="game-empty" hidden>No games match that search.</p>
+                <aside class="privacy-note library-privacy-note">
+                  <p>Sites may see the proxy server’s IP address. This does not make you anonymous. <button id="games-privacy" type="button">Details</button></p>
+                </aside>
+              </section>
+            </div>
+          </div>
+        </section>
+
         <nav class="dock" aria-label="Applications">
           <button class="dock-app active" data-app="browser" type="button"><span class="dock-icon browser-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/app-window.svg?color=%23d6e0d6" alt="" /></span><span>Browser</span></button>
+          <button class="dock-app" data-app="library" type="button"><span class="dock-icon library-art" aria-hidden="true"><span>▦</span></span><span>Games</span></button>
           <span class="dock-divider" aria-hidden="true"></span>
           <button class="dock-app" id="show-desktop" type="button"><span class="dock-icon desktop-art" aria-hidden="true"><img class="icon" src="https://api.iconify.design/lucide/monitor.svg?color=%23d6e0d6" alt="" /></span><span>Show desktop</span></button>
         </nav>
